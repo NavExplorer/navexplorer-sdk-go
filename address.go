@@ -7,6 +7,14 @@ import (
 	"time"
 )
 
+type ValidateAddress struct {
+	Valid           bool   `json:"isValid"`
+	Address         string `json:"address"`
+	StakingAddress  string `json:"stakingAddress"`
+	SpendingAddress string `json:"spendingAddress"`
+	ColdStaking     bool   `json:"isColdStaking"`
+}
+
 type Address struct {
 	Hash               string  `json:"hash"`
 	Received           float64 `json:"received"`
@@ -42,6 +50,12 @@ type Transaction struct {
 	ColdStakingReceived float64   `json:"coldStakingReceived"`
 }
 
+type Balance struct {
+	Address           string  `json:"address"`
+	Balance           float64 `json:"balance"`
+	ColdStakedBalance float64 `json:"coldStakedBalance"`
+}
+
 type TransactionType string
 
 const (
@@ -75,6 +89,18 @@ func (e *ExplorerApi) GetAddress(hash string) (address Address, err error) {
 	return
 }
 
+func (e *ExplorerApi) ValidateAddress(hash string) (validateAddress ValidateAddress, err error) {
+	method := fmt.Sprintf("/api/address/%s/validate", hash)
+
+	response, _, err := e.client.call(method)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(response, &validateAddress)
+	return
+}
+
 func (e *ExplorerApi) GetAddressTransactions(hash string, filters []TransactionType, page int, size int) (transactions []Transaction, paginator Paginator, err error) {
 	method := fmt.Sprintf("/api/address/%s/tx?page=%d&size=%d&filters=%s", hash, page, size, filtersToString(filters))
 
@@ -96,6 +122,18 @@ func (e *ExplorerApi) GetAddressColdTransactions(hash string, filters []Transact
 	}
 
 	err = json.Unmarshal(response, &transactions)
+	return
+}
+
+func (e *ExplorerApi) GetBalances(addresses []string) (balances []Balance, err error) {
+	method := fmt.Sprintf("/api/balance?addresses=%s", strings.Join(addresses, ","))
+
+	response, _, err := e.client.call(method)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(response, &balances)
 	return
 }
 
