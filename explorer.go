@@ -1,13 +1,23 @@
 package navexplorer
 
+import (
+	"errors"
+	"log"
+)
+
 type ExplorerApi struct {
 	client *ExplorerClient
 }
 
-func NewExplorerApi(host string, network Network) (*ExplorerApi, error) {
+var (
+	ErrorExplorerConnectionError = errors.New("Could not connect to the NavExplorer API")
+)
+
+func NewExplorerApi(host string, network string) (*ExplorerApi, error) {
 	explorerClient, err := NewClient(host, network)
 	if err != nil {
-		return nil, err
+		log.Print(err)
+		return nil, ErrorExplorerConnectionError
 	}
 
 	return &ExplorerApi{explorerClient}, nil

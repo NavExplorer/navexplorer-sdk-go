@@ -7,16 +7,9 @@ import (
 	"net/http"
 )
 
-type Network string
-
-const (
-	NETWORK_MAINNET Network = "mainnet"
-	NETWORK_TESTNET Network = "testnet"
-)
-
 type ExplorerClient struct {
 	host       string
-	network    Network
+	network    string
 	httpClient *http.Client
 }
 
@@ -30,7 +23,7 @@ type Paginator struct {
 	Elements    int   `json:"number_of_elements"`
 }
 
-func NewClient(host string, network Network) (c *ExplorerClient, err error) {
+func NewClient(host string, network string) (c *ExplorerClient, err error) {
 	if len(host) == 0 {
 		err = errors.New("bad call missing argument host")
 		return
