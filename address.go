@@ -113,10 +113,18 @@ func (e *ExplorerApi) GetAddressTransactions(hash string, filters []TransactionT
 	return
 }
 
-func (e *ExplorerApi) GetAddressColdTransactions(hash string, filters []TransactionType, page int, size int) (transactions []Transaction, paginator Paginator, err error) {
-	method := fmt.Sprintf("/api/address/%s/coldtx?page=%d&size=%d&filters=%s", hash, page, size, filtersToString(filters))
+func (e *ExplorerApi) GetColdTransactionsForAddresses(addresses []string, start *time.Time, end *time.Time) (transactions []Transaction, err error) {
+	var startTimestamp int64
+	var endTimestamp int64
+	if start != nil {
+		startTimestamp = start.Unix()
+	}
+	if end != nil {
+		endTimestamp = end.Unix()
+	}
+	method := fmt.Sprintf("/api/transactions/cold-staking?addresses=%s&start=%d&end=%d", strings.Join(addresses, ","), startTimestamp, endTimestamp)
 
-	response, paginator, err := e.client.call(method)
+	response, _, err := e.client.call(method)
 	if err != nil {
 		return
 	}
