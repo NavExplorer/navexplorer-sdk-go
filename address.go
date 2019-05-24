@@ -113,26 +113,6 @@ func (e *ExplorerApi) GetAddressTransactions(hash string, filters []TransactionT
 	return
 }
 
-func (e *ExplorerApi) GetColdTransactionsForAddresses(addresses []string, start *time.Time, end *time.Time) (transactions []Transaction, err error) {
-	var startTimestamp int64
-	var endTimestamp int64
-	if start != nil {
-		startTimestamp = start.Unix()
-	}
-	if end != nil {
-		endTimestamp = end.Unix()
-	}
-	method := fmt.Sprintf("/api/transactions/cold-staking?addresses=%s&start=%d&end=%d", strings.Join(addresses, ","), startTimestamp, endTimestamp)
-
-	response, _, err := e.client.call(method)
-	if err != nil {
-		return
-	}
-
-	err = json.Unmarshal(response, &transactions)
-	return
-}
-
 func (e *ExplorerApi) GetBalances(addresses []string) (balances []Balance, err error) {
 	method := fmt.Sprintf("/api/balance?addresses=%s", strings.Join(addresses, ","))
 
