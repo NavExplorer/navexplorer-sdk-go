@@ -16,23 +16,20 @@ type ValidateAddress struct {
 }
 
 type Address struct {
-	Hash               string  `json:"hash"`
-	Received           float64 `json:"received"`
-	ReceivedCount      int     `json:"receivedCount"`
-	Sent               float64 `json:"sent"`
-	SentCount          int     `json:"sentCount"`
-	Staked             float64 `json:"staked"`
-	StakedCount        int     `json:"stakedCount"`
-	StakedSent         float64 `json:"stakedSent"`
-	StakedReceived     float64 `json:"stakedReceived"`
-	ColdStaked         float64 `json:"coldStaked"`
-	ColdStakedCount    int     `json:"coldStakedCount"`
-	ColdStakedSent     float64 `json:"coldStakedSent"`
-	ColdStakedReceived float64 `json:"coldStakedReceived"`
-	ColdStakedBalance  float64 `json:"coldStakedBalance"`
-	Balance            float64 `json:"balance"`
-	BlockIndex         int     `json:"blockIndex"`
-	RichListPosition   int64   `json:"richListPosition"`
+	Hash               string `json:"hash"`
+	Received           int64  `json:"received"`
+	ReceivedCount      uint   `json:"receivedCount"`
+	Sent               int64  `json:"sent"`
+	SentCount          uint   `json:"sentCount"`
+	Staked             int64  `json:"staked"`
+	StakedCount        uint   `json:"stakedCount"`
+	ColdStaked         int64  `json:"coldStaked"`
+	ColdStakedCount    uint   `json:"coldStakedCount"`
+	ColdStakedSent     int64  `json:"coldSent"`
+	ColdStakedReceived int64  `json:"coldStakedReceived"`
+	ColdStakedBalance  int64  `json:"coldStakedBalance"`
+	Balance            int64  `json:"balance"`
+	Position           int64  `json:"position"`
 }
 
 type Transaction struct {
@@ -90,7 +87,7 @@ func (e *ExplorerApi) GetAddress(hash string) (address Address, err error) {
 }
 
 func (e *ExplorerApi) ValidateAddress(hash string) (validateAddress ValidateAddress, err error) {
-	method := fmt.Sprintf("/api/address/%s/validate", hash)
+	method := fmt.Sprintf("/address/%s/validate", hash)
 
 	response, _, err := e.client.call(method)
 	if err != nil {
@@ -102,7 +99,7 @@ func (e *ExplorerApi) ValidateAddress(hash string) (validateAddress ValidateAddr
 }
 
 func (e *ExplorerApi) GetAddressTransactions(hash string, filters []TransactionType, page int, size int) (transactions []Transaction, paginator Paginator, err error) {
-	method := fmt.Sprintf("/api/address/%s/tx?page=%d&size=%d&filters=%s", hash, page, size, filtersToString(filters))
+	method := fmt.Sprintf("/address/%s/tx?page=%d&size=%d&filters=%s", hash, page, size, filtersToString(filters))
 
 	response, paginator, err := e.client.call(method)
 	if err != nil {
@@ -110,18 +107,6 @@ func (e *ExplorerApi) GetAddressTransactions(hash string, filters []TransactionT
 	}
 
 	err = json.Unmarshal(response, &transactions)
-	return
-}
-
-func (e *ExplorerApi) GetBalances(addresses []string) (balances []Balance, err error) {
-	method := fmt.Sprintf("/api/balance?addresses=%s", strings.Join(addresses, ","))
-
-	response, _, err := e.client.call(method)
-	if err != nil {
-		return
-	}
-
-	err = json.Unmarshal(response, &balances)
 	return
 }
 

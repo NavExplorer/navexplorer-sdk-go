@@ -19,7 +19,7 @@ type RewardPeriod struct {
 }
 
 func (e *ExplorerApi) GetStakingRewardsForAddresses(addresses []string) (rewards []Reward, err error) {
-	method := fmt.Sprintf("/api/staking/rewards?addresses=%s", strings.Join(addresses, ","))
+	method := fmt.Sprintf("/staking/rewards?addresses=%s", strings.Join(addresses, ","))
 	log.Print(method)
 
 	response, _, err := e.client.call(method)
