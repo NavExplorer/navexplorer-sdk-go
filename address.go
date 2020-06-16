@@ -63,7 +63,7 @@ const (
 )
 
 func (e *ExplorerApi) GetAddresses(page int, size int) (addresses []Address, paginator Paginator, err error) {
-	method := fmt.Sprintf("/api/address?page=%d&size=%d", page, size)
+	method := fmt.Sprintf("/address?page=%d&size=%d", page, size)
 
 	response, paginator, err := e.client.call(method)
 	if err != nil {
@@ -75,7 +75,7 @@ func (e *ExplorerApi) GetAddresses(page int, size int) (addresses []Address, pag
 }
 
 func (e *ExplorerApi) GetAddress(hash string) (address Address, err error) {
-	method := fmt.Sprintf("/api/address/%s", hash)
+	method := fmt.Sprintf("/address/%s", hash)
 
 	response, _, err := e.client.call(method)
 	if err != nil {
@@ -107,6 +107,18 @@ func (e *ExplorerApi) GetAddressTransactions(hash string, filters []TransactionT
 	}
 
 	err = json.Unmarshal(response, &transactions)
+	return
+}
+
+func (e *ExplorerApi) GetBalances(addresses []string) (balances []Balance, err error) {
+	method := fmt.Sprintf("/balance?addresses=%s", strings.Join(addresses, ","))
+
+	response, _, err := e.client.call(method)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(response, &balances)
 	return
 }
 
