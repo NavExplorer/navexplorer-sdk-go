@@ -3,6 +3,7 @@ package navexplorer
 import (
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"strings"
 	"time"
 )
@@ -64,6 +65,7 @@ const (
 
 func (e *ExplorerApi) GetAddresses(page int, size int) (addresses []Address, paginator Paginator, err error) {
 	method := fmt.Sprintf("/address?page=%d&size=%d", page, size)
+	log.Info(method)
 
 	response, paginator, err := e.client.call(method)
 	if err != nil {
@@ -76,6 +78,7 @@ func (e *ExplorerApi) GetAddresses(page int, size int) (addresses []Address, pag
 
 func (e *ExplorerApi) GetAddress(hash string) (address Address, err error) {
 	method := fmt.Sprintf("/address/%s", hash)
+	log.Info(method)
 
 	response, _, err := e.client.call(method)
 	if err != nil {
@@ -88,6 +91,7 @@ func (e *ExplorerApi) GetAddress(hash string) (address Address, err error) {
 
 func (e *ExplorerApi) ValidateAddress(hash string) (validateAddress ValidateAddress, err error) {
 	method := fmt.Sprintf("/address/%s/validate", hash)
+	log.Info(method)
 
 	response, _, err := e.client.call(method)
 	if err != nil {
@@ -100,6 +104,7 @@ func (e *ExplorerApi) ValidateAddress(hash string) (validateAddress ValidateAddr
 
 func (e *ExplorerApi) GetAddressTransactions(hash string, filters []TransactionType, page int, size int) (transactions []Transaction, paginator Paginator, err error) {
 	method := fmt.Sprintf("/address/%s/tx?page=%d&size=%d&filters=%s", hash, page, size, filtersToString(filters))
+	log.Info(method)
 
 	response, paginator, err := e.client.call(method)
 	if err != nil {
@@ -112,6 +117,7 @@ func (e *ExplorerApi) GetAddressTransactions(hash string, filters []TransactionT
 
 func (e *ExplorerApi) GetBalances(addresses []string) (balances []Balance, err error) {
 	method := fmt.Sprintf("/balance?addresses=%s", strings.Join(addresses, ","))
+	log.Info(method)
 
 	response, _, err := e.client.call(method)
 	if err != nil {

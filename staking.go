@@ -3,7 +3,7 @@ package navexplorer
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -20,7 +20,7 @@ type RewardPeriod struct {
 
 func (e *ExplorerApi) GetStakingRewardsForAddresses(addresses []string) (rewards []Reward, err error) {
 	method := fmt.Sprintf("/staking/rewards?addresses=%s", strings.Join(addresses, ","))
-	log.Print(method)
+	log.Info(method)
 
 	response, _, err := e.client.call(method)
 	if err != nil {
