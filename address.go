@@ -49,9 +49,11 @@ type Transaction struct {
 }
 
 type Balance struct {
-	Address           string  `json:"address"`
-	Balance           float64 `json:"balance"`
-	ColdStakedBalance float64 `json:"coldStakedBalance"`
+	Hash         string `json:"hash"`
+	Height       uint64 `json:"height"`
+	Spendable    uint64 `json:"spendable"`
+	Stakable     uint64 `json:"stakable"`
+	VotingWeight uint64 `json:"voting_weight"`
 }
 
 type TransactionType string
