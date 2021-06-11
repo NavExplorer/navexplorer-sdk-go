@@ -3,6 +3,7 @@ package navexplorer
 import (
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"strings"
 	"time"
 )
@@ -16,23 +17,20 @@ type ValidateAddress struct {
 }
 
 type Address struct {
-	Hash               string  `json:"hash"`
-	Received           float64 `json:"received"`
-	ReceivedCount      int     `json:"receivedCount"`
-	Sent               float64 `json:"sent"`
-	SentCount          int     `json:"sentCount"`
-	Staked             float64 `json:"staked"`
-	StakedCount        int     `json:"stakedCount"`
-	StakedSent         float64 `json:"stakedSent"`
-	StakedReceived     float64 `json:"stakedReceived"`
-	ColdStaked         float64 `json:"coldStaked"`
-	ColdStakedCount    int     `json:"coldStakedCount"`
-	ColdStakedSent     float64 `json:"coldStakedSent"`
-	ColdStakedReceived float64 `json:"coldStakedReceived"`
-	ColdStakedBalance  float64 `json:"coldStakedBalance"`
-	Balance            float64 `json:"balance"`
-	BlockIndex         int     `json:"blockIndex"`
-	RichListPosition   int64   `json:"richListPosition"`
+	Hash               string `json:"hash"`
+	Received           int64  `json:"received"`
+	ReceivedCount      uint   `json:"receivedCount"`
+	Sent               int64  `json:"sent"`
+	SentCount          uint   `json:"sentCount"`
+	Staked             int64  `json:"staked"`
+	StakedCount        uint   `json:"stakedCount"`
+	ColdStaked         int64  `json:"coldStaked"`
+	ColdStakedCount    uint   `json:"coldStakedCount"`
+	ColdStakedSent     int64  `json:"coldSent"`
+	ColdStakedReceived int64  `json:"coldStakedReceived"`
+	ColdStakedBalance  int64  `json:"coldStakedBalance"`
+	Balance            int64  `json:"balance"`
+	Position           int64  `json:"position"`
 }
 
 type Transaction struct {
@@ -51,9 +49,11 @@ type Transaction struct {
 }
 
 type Balance struct {
-	Address           string  `json:"address"`
-	Balance           float64 `json:"balance"`
-	ColdStakedBalance float64 `json:"coldStakedBalance"`
+	Hash         string `json:"hash"`
+	Height       uint64 `json:"height"`
+	Spendable    uint64 `json:"spendable"`
+	Stakable     uint64 `json:"stakable"`
+	VotingWeight uint64 `json:"voting_weight"`
 }
 
 type TransactionType string
@@ -66,7 +66,8 @@ const (
 )
 
 func (e *ExplorerApi) GetAddresses(page int, size int) (addresses []Address, paginator Paginator, err error) {
-	method := fmt.Sprintf("/api/address?page=%d&size=%d", page, size)
+	method := fmt.Sprintf("/address?page=%d&size=%d", page, size)
+	log.Info(method)
 
 	response, paginator, err := e.client.call(method)
 	if err != nil {
@@ -78,7 +79,8 @@ func (e *ExplorerApi) GetAddresses(page int, size int) (addresses []Address, pag
 }
 
 func (e *ExplorerApi) GetAddress(hash string) (address Address, err error) {
-	method := fmt.Sprintf("/api/address/%s", hash)
+	method := fmt.Sprintf("/address/%s", hash)
+	log.Info(method)
 
 	response, _, err := e.client.call(method)
 	if err != nil {
@@ -90,7 +92,8 @@ func (e *ExplorerApi) GetAddress(hash string) (address Address, err error) {
 }
 
 func (e *ExplorerApi) ValidateAddress(hash string) (validateAddress ValidateAddress, err error) {
-	method := fmt.Sprintf("/api/address/%s/validate", hash)
+	method := fmt.Sprintf("/address/%s/validate", hash)
+	log.Info(method)
 
 	response, _, err := e.client.call(method)
 	if err != nil {
@@ -102,7 +105,8 @@ func (e *ExplorerApi) ValidateAddress(hash string) (validateAddress ValidateAddr
 }
 
 func (e *ExplorerApi) GetAddressTransactions(hash string, filters []TransactionType, page int, size int) (transactions []Transaction, paginator Paginator, err error) {
-	method := fmt.Sprintf("/api/address/%s/tx?page=%d&size=%d&filters=%s", hash, page, size, filtersToString(filters))
+	method := fmt.Sprintf("/address/%s/tx?page=%d&size=%d&filters=%s", hash, page, size, filtersToString(filters))
+	log.Info(method)
 
 	response, paginator, err := e.client.call(method)
 	if err != nil {
@@ -114,7 +118,8 @@ func (e *ExplorerApi) GetAddressTransactions(hash string, filters []TransactionT
 }
 
 func (e *ExplorerApi) GetBalances(addresses []string) (balances []Balance, err error) {
-	method := fmt.Sprintf("/api/balance?addresses=%s", strings.Join(addresses, ","))
+	method := fmt.Sprintf("/balance?addresses=%s", strings.Join(addresses, ","))
+	log.Info(method)
 
 	response, _, err := e.client.call(method)
 	if err != nil {
